@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Weather Cards</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .weather-card {
+            width: 200px;
+            height: 250px;
+            background: #333;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        
+        /* Wind Animation */
+        .wind .cloud {
+            position: absolute;
+            top: 30px;
+            width: 50px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            animation: windMove 3s linear infinite;
+        }
+        .wind .cloud:nth-child(2) {
+            top: 60px;
+            left: 50px;
+            width: 60px;
+            animation-delay: 0.5s;
+        }
+        @keyframes windMove {
+            0% { transform: translateX(-50px); opacity: 1; }
+            100% { transform: translateX(150px); opacity: 0; }
+        }
+
+        /* Rain Animation */
+        .rain .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background: cyan;
+            top: -10px;
+            animation: fall 1s linear infinite;
+        }
+        .rain .raindrop:nth-child(n) {
+            left: calc(var(--x) * 1%);
+            animation-duration: calc(0.8s + var(--speed) * 0.4s);
+        }
+        @keyframes fall {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(250px); opacity: 0; }
+        }
+
+        /* Sun Animation */
+        .sun {
+            width: 80px;
+            height: 80px;
+            background: yellow;
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 20px yellow;
+            animation: pulse 2s infinite alternate;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px yellow; }
+            100% { transform: scale(1.2); box-shadow: 0 0 40px yellow; }
+        }
+
+        /* Snow Animation */
+        .snow .snowflake {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: white;
+            border-radius: 50%;
+            top: -10px;
+            animation: snowfall 3s linear infinite;
+        }
+        .snow .snowflake:nth-child(n) {
+            left: calc(var(--x) * 1%);
+            animation-duration: calc(2s + var(--speed) * 1s);
+        }
+        @keyframes snowfall {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(250px); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="weather-card wind">
+        <div class="cloud"></div>
+        <div class="cloud"></div>
+        Wind
+    </div>
+    
+    <div class="weather-card rain">
+        Rain
+    </div>
+    
+    <div class="weather-card sun">
+        <div class="sun"></div>
+        Sun
+    </div>
+    
+    <div class="weather-card snow">
+        Snow
+    </div>
+</div>
+
+<script>
+    // Generate raindrops dynamically
+    const rainCard = document.querySelector('.rain');
+    for (let i = 0; i < 30; i++) {
+        let raindrop = document.createElement('div');
+        raindrop.classList.add('raindrop');
+        raindrop.style.setProperty('--x', Math.random() * 100);
+        raindrop.style.setProperty('--speed', Math.random());
+        rainCard.appendChild(raindrop);
+    }
+
+    // Generate snowflakes dynamically
+    const snowCard = document.querySelector('.snow');
+    for (let i = 0; i < 30; i++) {
+        let snowflake = document.createElement('div');
+        snowflake.classList.add('snowflake');
+        snowflake.style.setProperty('--x', Math.random() * 100);
+        snowflake.style.setProperty('--speed', Math.random());
+        snowCard.appendChild(snowflake);
+    }
+</script>
+
+</body>
+</html>
