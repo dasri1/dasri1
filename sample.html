@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Animated Weather Cards</title>
+    <title>Weather Cards with API</title>
     <style>
         body {
             display: flex;
@@ -16,22 +16,21 @@
             font-family: Arial, sans-serif;
             color: white;
         }
-        .button-container {
+        .input-container {
             margin-bottom: 20px;
         }
-        .button-container button {
-            margin: 5px;
-            padding: 10px 15px;
-            border: none;
-            cursor: pointer;
+        .input-container input {
+            padding: 10px;
             font-size: 16px;
-            border-radius: 5px;
-            background-color: #555;
-            color: white;
-            transition: 0.3s;
         }
-        .button-container button:hover {
-            background-color: #777;
+        .input-container button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #555;
+            color: white;
+            border: none;
+            margin-left: 5px;
         }
         .container {
             display: flex;
@@ -41,171 +40,72 @@
             width: 200px;
             height: 250px;
             border-radius: 10px;
-            position: relative;
-            overflow: hidden;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2em;
-            transition: transform 0.3s;
         }
-        .wind { background: linear-gradient(to top, #77aadd, #ddeeff); }
-        .rain { background: linear-gradient(to bottom, #2c3e50, #34495e); }
-        .sun { background: linear-gradient(to top, #ffcc00, #ff9900); }
-        .snow { background: linear-gradient(to bottom, #1e272e, #485460); }
-
-        /* Wind Animation */
-        .wind .cloud {
-            position: absolute;
-            top: 30px;
-            width: 60px;
-            height: 30px;
-            background: white;
-            border-radius: 50%;
-            animation: windMove 3s linear infinite;
-        }
-        .wind .cloud:nth-child(2) {
-            top: 60px;
-            left: 50px;
-            width: 70px;
-            animation-delay: 0.5s;
-        }
-        @keyframes windMove {
-            0% { transform: translateX(-50px); opacity: 1; }
-            100% { transform: translateX(150px); opacity: 0; }
-        }
-
-        /* Rain Animation */
-        .rain .raindrop {
-            position: absolute;
-            width: 2px;
-            height: 10px;
-            background: cyan;
-            top: -10px;
-            animation: fall 1s linear infinite;
-        }
-        .rain .raindrop:nth-child(n) {
-            left: calc(var(--x) * 1%);
-            animation-duration: calc(0.8s + var(--speed) * 0.4s);
-        }
-        @keyframes fall {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(250px); opacity: 0; }
-        }
-
-        /* Sun Animation */
-        .sun .sun-circle {
-            width: 80px;
-            height: 80px;
-            background: yellow;
-            border-radius: 50%;
-            position: absolute;
-            box-shadow: 0 0 20px yellow;
-            animation: pulse 2s infinite alternate;
-        }
-        .sun .cloud {
-            position: absolute;
-            bottom: 30px;
-            width: 50px;
-            height: 25px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.8;
-        }
-        .sun .cloud:nth-child(2) {
-            left: 40px;
-            width: 60px;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 20px yellow; }
-            100% { transform: scale(1.2); box-shadow: 0 0 40px yellow; }
-        }
-
-        /* Snow Animation */
-        .snow .snowflake {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            background: white;
-            border-radius: 50%;
-            top: -10px;
-            animation: snowfall 3s linear infinite;
-        }
-        .snow .snowflake:nth-child(n) {
-            left: calc(var(--x) * 1%);
-            animation-duration: calc(2s + var(--speed) * 1s);
-        }
-        @keyframes snowfall {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(250px); opacity: 0; }
-        }
-
-        /* Zoom effect on selected card */
-        .zoomed {
-            transform: scale(1.2);
-        }
+        .wind { background: #77aadd; }
+        .rain { background: #2c3e50; }
+        .sun { background: #ffcc00; }
+        .snow { background: #485460; }
     </style>
 </head>
 <body>
 
-<div class="button-container">
-    <button onclick="zoomCard('wind')">Wind</button>
-    <button onclick="zoomCard('rain')">Rain</button>
-    <button onclick="zoomCard('sun')">Sun</button>
-    <button onclick="zoomCard('snow')">Snow</button>
+<div class="input-container">
+    <input type="text" id="cityInput" placeholder="Enter city name">
+    <button onclick="fetchWeather()">Get Weather</button>
 </div>
 
 <div class="container">
-    <div class="weather-card wind" id="wind">
-        <div class="cloud"></div>
-        <div class="cloud"></div>
-        Wind
-    </div>
-    
-    <div class="weather-card rain" id="rain">
-        Rain
-    </div>
-    
-    <div class="weather-card sun" id="sun">
-        <div class="sun-circle"></div>
-        <div class="cloud"></div>
-        <div class="cloud"></div>
-        Sun
-    </div>
-    
-    <div class="weather-card snow" id="snow">
-        Snow
-    </div>
+    <div class="weather-card wind" id="wind">Wind</div>
+    <div class="weather-card rain" id="rain">Rain</div>
+    <div class="weather-card sun" id="sun">Sun</div>
+    <div class="weather-card snow" id="snow">Snow</div>
 </div>
 
 <script>
-    // Generate raindrops dynamically
-    const rainCard = document.querySelector('.rain');
-    for (let i = 0; i < 30; i++) {
-        let raindrop = document.createElement('div');
-        raindrop.classList.add('raindrop');
-        raindrop.style.setProperty('--x', Math.random() * 100);
-        raindrop.style.setProperty('--speed', Math.random());
-        rainCard.appendChild(raindrop);
+    const API_KEY = "YOUR_API_KEY_HERE";  // Replace with your OpenWeatherMap API Key
+
+    function fetchWeather() {
+        const city = document.getElementById("cityInput").value;
+        if (!city) {
+            alert("Please enter a city name");
+            return;
+        }
+
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${API_KEY}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                updateWeatherCards(data);
+            })
+            .catch(error => {
+                console.error("Error fetching weather data:", error);
+                alert("Could not fetch weather data. Check the city name.");
+            });
     }
 
-    // Generate snowflakes dynamically
-    const snowCard = document.querySelector('.snow');
-    for (let i = 0; i < 30; i++) {
-        let snowflake = document.createElement('div');
-        snowflake.classList.add('snowflake');
-        snowflake.style.setProperty('--x', Math.random() * 100);
-        snowflake.style.setProperty('--speed', Math.random());
-        snowCard.appendChild(snowflake);
-    }
+    function updateWeatherCards(data) {
+        const weatherCondition = data.weather[0].main.toLowerCase();
 
-    // Function to zoom in on a selected card
-    function zoomCard(weatherType) {
         document.querySelectorAll('.weather-card').forEach(card => {
-            card.classList.remove('zoomed');
+            card.style.opacity = "0.5";  // Dim non-matching cards
         });
-        document.getElementById(weatherType).classList.add('zoomed');
+
+        if (weatherCondition.includes("wind")) {
+            document.getElementById("wind").style.opacity = "1";
+        } else if (weatherCondition.includes("rain")) {
+            document.getElementById("rain").style.opacity = "1";
+        } else if (weatherCondition.includes("clear") || weatherCondition.includes("sun")) {
+            document.getElementById("sun").style.opacity = "1";
+        } else if (weatherCondition.includes("snow")) {
+            document.getElementById("snow").style.opacity = "1";
+        }
     }
 </script>
 
