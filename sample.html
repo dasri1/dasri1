@@ -7,12 +7,31 @@
     <style>
         body {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             background-color: #222;
             margin: 0;
             font-family: Arial, sans-serif;
+            color: white;
+        }
+        .button-container {
+            margin-bottom: 20px;
+        }
+        .button-container button {
+            margin: 5px;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: #555;
+            color: white;
+            transition: 0.3s;
+        }
+        .button-container button:hover {
+            background-color: #777;
         }
         .container {
             display: flex;
@@ -21,23 +40,26 @@
         .weather-card {
             width: 200px;
             height: 250px;
-            background: #333;
             border-radius: 10px;
             position: relative;
             overflow: hidden;
-            color: white;
+            text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2em;
-            text-align: center;
+            transition: transform 0.3s;
         }
-        
+        .wind { background: linear-gradient(to top, #77aadd, #ddeeff); }
+        .rain { background: linear-gradient(to bottom, #2c3e50, #34495e); }
+        .sun { background: linear-gradient(to top, #ffcc00, #ff9900); }
+        .snow { background: linear-gradient(to bottom, #1e272e, #485460); }
+
         /* Wind Animation */
         .wind .cloud {
             position: absolute;
             top: 30px;
-            width: 50px;
+            width: 60px;
             height: 30px;
             background: white;
             border-radius: 50%;
@@ -46,7 +68,7 @@
         .wind .cloud:nth-child(2) {
             top: 60px;
             left: 50px;
-            width: 60px;
+            width: 70px;
             animation-delay: 0.5s;
         }
         @keyframes windMove {
@@ -73,7 +95,7 @@
         }
 
         /* Sun Animation */
-        .sun {
+        .sun .sun-circle {
             width: 80px;
             height: 80px;
             background: yellow;
@@ -81,6 +103,19 @@
             position: absolute;
             box-shadow: 0 0 20px yellow;
             animation: pulse 2s infinite alternate;
+        }
+        .sun .cloud {
+            position: absolute;
+            bottom: 30px;
+            width: 50px;
+            height: 25px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+        .sun .cloud:nth-child(2) {
+            left: 40px;
+            width: 60px;
         }
         @keyframes pulse {
             0% { transform: scale(1); box-shadow: 0 0 20px yellow; }
@@ -105,27 +140,41 @@
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(250px); opacity: 0; }
         }
+
+        /* Zoom effect on selected card */
+        .zoomed {
+            transform: scale(1.2);
+        }
     </style>
 </head>
 <body>
 
+<div class="button-container">
+    <button onclick="zoomCard('wind')">Wind</button>
+    <button onclick="zoomCard('rain')">Rain</button>
+    <button onclick="zoomCard('sun')">Sun</button>
+    <button onclick="zoomCard('snow')">Snow</button>
+</div>
+
 <div class="container">
-    <div class="weather-card wind">
+    <div class="weather-card wind" id="wind">
         <div class="cloud"></div>
         <div class="cloud"></div>
         Wind
     </div>
     
-    <div class="weather-card rain">
+    <div class="weather-card rain" id="rain">
         Rain
     </div>
     
-    <div class="weather-card sun">
-        <div class="sun"></div>
+    <div class="weather-card sun" id="sun">
+        <div class="sun-circle"></div>
+        <div class="cloud"></div>
+        <div class="cloud"></div>
         Sun
     </div>
     
-    <div class="weather-card snow">
+    <div class="weather-card snow" id="snow">
         Snow
     </div>
 </div>
@@ -149,6 +198,14 @@
         snowflake.style.setProperty('--x', Math.random() * 100);
         snowflake.style.setProperty('--speed', Math.random());
         snowCard.appendChild(snowflake);
+    }
+
+    // Function to zoom in on a selected card
+    function zoomCard(weatherType) {
+        document.querySelectorAll('.weather-card').forEach(card => {
+            card.classList.remove('zoomed');
+        });
+        document.getElementById(weatherType).classList.add('zoomed');
     }
 </script>
 
